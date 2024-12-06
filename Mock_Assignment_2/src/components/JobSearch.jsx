@@ -1,12 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import location_logo from "../assets/location_logo.png";
 import search_logo from "../assets/search_logo.png";
 import { CardData } from "../data/CardData";
+import Card from "./Card";
 
 const JobSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const [allJobs, setAllJobs] = useState(CardData);
+
+  useEffect(() => {
+    const loadMoreJobs = () => {
+      const moreJobs = [
+        {
+          id: 5,
+          JobTitle: "UX Designer",
+          Location: "San Francisco",
+          Salary: "$90k",
+          Company: "Company E",
+          Logo: "logo5.png",
+          JobType: "Full-time",
+        },
+        {
+          id: 6,
+          JobTitle: "Software Engineer",
+          Location: "Austin",
+          Salary: "$110k",
+          Company: "Company F",
+          Logo: "logo6.png",
+          JobType: "Full-time",
+        },
+      ];
+      setAllJobs((prevJobs) => [...prevJobs, ...moreJobs]);
+    };
+
+    setTimeout(loadMoreJobs, 3000);
+  }, []);
 
   const handleSearch = (e) => {
     if (e.target.placeholder.includes("Job Title")) {
@@ -17,7 +47,7 @@ const JobSearch = () => {
   };
 
   const handleSubmit = () => {
-    const filtered = CardData.filter((job) => {
+    const filtered = allJobs.filter((job) => {
       const matchesTitle = job.JobTitle.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
@@ -26,7 +56,6 @@ const JobSearch = () => {
       );
       return matchesTitle && matchesLocation;
     });
-
     setFilteredJobs(filtered);
   };
 
@@ -65,27 +94,13 @@ const JobSearch = () => {
         </div>
 
         <div className="mt-8">
-          <ul className="mt-4 space-y-4">
-            {filteredJobs.map((job) => (
-              <li
-                key={job.id}
-                className="bg-white shadow-md p-4 rounded-md border border-gray-300 flex items-center space-x-4"
-              >
-                <img
-                  src={job.Logo}
-                  alt={`${job.Company} Logo`}
-                  className="w-16 h-16 rounded-md"
-                />
-                <div>
-                  <h3 className="text-lg font-medium">{job.JobTitle}</h3>
-                  <p className="text-sm text-gray-600">{job.Company}</p>
-                  <p className="text-sm text-gray-500">{job.Location}</p>
-                  <p className="text-sm text-gray-400">{job.JobType}</p>
-                  <p className="text-sm text-gray-400">{job.Salary}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredJobs.length === 0 ? (
+              <p className="text-center text-gray-500"></p>
+            ) : (
+              filteredJobs.map((job) => <Card key={job.id} card={job} />)
+            )}
+          </div>
         </div>
       </div>
     </div>
